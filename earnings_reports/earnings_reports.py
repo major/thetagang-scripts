@@ -6,6 +6,7 @@ import sys
 import re
 
 from discord_webhook import DiscordWebhook
+from finvizfinance.quote import finvizfinance
 import requests
 import tweepy
 
@@ -59,6 +60,18 @@ def recently_traded(symbol):
 
 class EarningsPublisher(object):
     """Send earnings events to Discord."""
+
+    def get_company_details(self, ticker):
+        """Get company name and industry/sector data."""
+        try:
+            stock = finvizfinance(ticker)
+            details = stock.ticker_fundament()
+            return (
+                f"{details['Company']} | {details['Sector']} | "
+                f"{details['Industry']}"
+            )
+        except:
+            return ""
 
     def get_consensus(self):
         """Get consensus for the earnings."""
@@ -130,11 +143,15 @@ class EarningsPublisher(object):
         # Get an emoji based on the earnings outcome.
         emoji = self.get_emoji(earnings, consensus)
 
+        # Get the company name and sector/industry data from Finviz
+        company_details = self.get_company_details(ticker)
+
         return {
             "ticker": ticker,
             "earnings": earnings,
             "consensus": consensus,
-            "emoji": emoji
+            "emoji": emoji,
+            "company_details": company_details
         }
 
     def generate_message(self, tweet):
@@ -147,7 +164,8 @@ class EarningsPublisher(object):
 
         message = (
             f"{parsed['emoji']} **{parsed['ticker']}**: {parsed['earnings']}"
-            f" (expected: {parsed['consensus'] or 'unknown'})"
+            f" (expected: {parsed['consensus'] or 'unknown'}) "
+            f" {parsed['company_details']}"
         )
 
         return message
@@ -189,7 +207,10 @@ printer = IDPrinter(
 )
 
 # Follow @EPSGUID tweets.
+# 55395551 is the @EPSGUID twitter account.
+# 1483914430966648835 is my @majorhaydentest twitter account.
 printer.filter(follow=[55395551])
+# printer.filter(follow=[55395551, 1483914430966648835])
 
 # Print a message to Discord noting that we shut down.
 logging.info('Shutting down...')
