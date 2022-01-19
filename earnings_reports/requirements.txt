@@ -1,3 +1,4 @@
 discord-webhook
+finvizfinance
 requests
 tweepy
