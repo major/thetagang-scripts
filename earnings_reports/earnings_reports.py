@@ -6,9 +6,9 @@ import sys
 import re
 
 from discord_webhook import DiscordWebhook
-from finvizfinance.quote import finvizfinance
 import requests
 import tweepy
+import yfinance
 
 
 # The Discord webhook URL where messages should be sent. For threads, append
@@ -64,11 +64,10 @@ class EarningsPublisher(object):
     def get_company_details(self, ticker):
         """Get company name and industry/sector data."""
         try:
-            stock = finvizfinance(ticker)
-            details = stock.ticker_fundament()
+            stock = yfinance.Ticker(ticker)
+            info = stock.info
             return (
-                f"{details['Company']} | {details['Sector']} | "
-                f"{details['Industry']}"
+                f"{info['longName']} » {info['sector']} » {info['industry']}"
             )
         except:
             return ""
@@ -209,8 +208,8 @@ printer = IDPrinter(
 # Follow @EPSGUID tweets.
 # 55395551 is the @EPSGUID twitter account.
 # 1483914430966648835 is my @majorhaydentest twitter account.
-printer.filter(follow=[55395551])
-# printer.filter(follow=[55395551, 1483914430966648835])
+# printer.filter(follow=[55395551])
+printer.filter(follow=[55395551, 1483914430966648835])
 
 # Print a message to Discord noting that we shut down.
 logging.info('Shutting down...')

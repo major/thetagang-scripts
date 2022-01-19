@@ -1,4 +1,4 @@
-FROM docker.io/library/python:3.10-alpine
+FROM registry.fedoraproject.org/fedora:latest
 
 LABEL org.opencontainers.image.description "Send earnings reports to the ThetaGang Discord"
 LABEL org.opencontainers.image.authors "Major Hayden <major@mhtx.net>"
@@ -6,6 +6,7 @@ LABEL org.opencontainers.image.url "https://github.com/major/thetagang-scripts"
 
 RUN mkdir /app
 COPY earnings_reports.py requirements.txt /app
-RUN pip install -U pip wheel; pip install -r /app/requirements.txt
+RUN dnf -y install python3-pip python3-yfinance python3-wheel && dnf clean all
+RUN pip3 install -r /app/requirements.txt
 RUN chmod +x /app/earnings_reports.py
 CMD ["/app/earnings_reports.py"]
