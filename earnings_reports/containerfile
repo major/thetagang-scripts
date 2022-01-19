@@ -6,7 +6,7 @@ LABEL org.opencontainers.image.url "https://github.com/major/thetagang-scripts"
 
 RUN mkdir /app
 COPY earnings_reports.py requirements.txt /app
-RUN dnf -y install python3-pip python3-yfinance python3-wheel && dnf clean all
+RUN dnf -y install /usr/bin/python python3-pip python3-yfinance python3-wheel && dnf clean all
 RUN pip3 install -r /app/requirements.txt
 RUN chmod +x /app/earnings_reports.py
 CMD ["/app/earnings_reports.py"]
