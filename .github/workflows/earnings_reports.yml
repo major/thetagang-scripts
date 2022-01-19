@@ -1,4 +1,4 @@
-name: theta_trends
+name: earnings_reports
 on:
   - push
 
